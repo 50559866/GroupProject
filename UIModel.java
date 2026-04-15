@@ -20,6 +20,7 @@ public class UIModel {
     private final String STATE_ACCOUNT_NO = "account_no";
     private final String STATE_PASSWORD = "password";
     private final String STATE_LOGGED_IN = "logged_in";
+    private final String STATE_CHANGE_PASSWORD = "change_password";
 
     // Variables representing the state and data of the ATM UIModel
     private String state = STATE_ACCOUNT_NO;    // Current state of the ATM
@@ -102,16 +103,14 @@ public class UIModel {
     public void processEnter()
     {
         // The action depends on the current ATM state
-        switch ( state )
-        {
+        switch ( state ) {
             case STATE_ACCOUNT_NO:
                 // Waiting for a complete account number
                 // If nothing was entered, reset with "Invalid Account Number"
                 if (numberPadInput.equals("")) {
                     message = "Invalid Account Number";
                     reset(message);
-                }
-                else{
+                } else {
                     // Save the entered number as accNumber, clear numberPadInput,
                     // update the state to expect password, and provide instructions
                     accNumber = numberPadInput;
@@ -123,13 +122,12 @@ public class UIModel {
                 break;
 
             case STATE_PASSWORD:
-                    // Waiting for a password
-                    // Save the typed number as accPasswd, clear numberPadInput,
-                    // then contact the bank to attempt login
+                // Waiting for a password
+                // Save the typed number as accPasswd, clear numberPadInput,
+                // then contact the bank to attempt login
                 accPasswd = numberPadInput;
                 numberPadInput = "";
-                if ( bank.login(accNumber, accPasswd) )
-                {
+                if (bank.login(accNumber, accPasswd)) {
                     // Successful login: change state to STATE_LOGGED_IN and provide instructions
                     setState(STATE_LOGGED_IN);
                     message = "Logged In";
@@ -138,6 +136,17 @@ public class UIModel {
                     // Login failed: reset ATM and display error
                     message = "Login failed: Unknown Account/Password";
                     reset(message);
+                }
+                break;
+            case STATE_CHANGE_PASSWORD:
+                result = "Please enter new password";
+                if (numberPadInput.length() == 5) {
+                    numberPadInput = bank.getaccPasswd();
+                    message = "Password change successful";
+                    result = "Now enter the amount\nThen press transaction\n(Dep = Deposit, W/D = Withdraw)";
+                } else {
+                    message = "Password change unsuccessful";
+                    result = "Please enter a password that is 5 characters long";
                 }
                 break;
 
@@ -246,6 +255,14 @@ public class UIModel {
             bank.logout();
         } else {
             reset("You are not logged in");
+        }
+        update();
+    }
+
+    public void processChangePassword() {
+        if (state.equals(STATE_LOGGED_IN)) {
+            setState(STATE_CHANGE_PASSWORD);
+            result = "Please enter new password";
         }
         update();
     }
