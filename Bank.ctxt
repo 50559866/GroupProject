@@ -1,0 +1,21 @@
+#BlueJ class context
+comment0.target=Bank
+comment1.params=accNumber\ accPasswd\ balance
+comment1.target=com.atmbanksimulator.BankAccount\ makeBankAccount(java.lang.String,\ java.lang.String,\ int)
+comment2.params=a
+comment2.target=boolean\ addBankAccount(com.atmbanksimulator.BankAccount)
+comment3.params=accNumber\ accPasswd\ balance
+comment3.target=boolean\ addBankAccount(java.lang.String,\ java.lang.String,\ int)
+comment4.params=accountNumber\ password
+comment4.target=boolean\ login(java.lang.String,\ java.lang.String)
+comment5.params=
+comment5.target=void\ logout()
+comment6.params=
+comment6.target=boolean\ loggedIn()
+comment7.params=amount
+comment7.target=boolean\ deposit(int)
+comment8.params=amount
+comment8.target=boolean\ withdraw(int)
+comment9.params=
+comment9.target=int\ getBalance()
+numComments=10

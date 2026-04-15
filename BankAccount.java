@@ -44,6 +44,10 @@ public class BankAccount {
     public int getBalance() {
         return balance;
     }
+    //For the prime account allows overdraft as parent class overrules new set rules so cant use what is inside the withdraw function
+    protected void setBalance(int newBalance){
+        balance = newBalance;
+    }
 
     // Getter for the account number
     public String getAccNumber() {

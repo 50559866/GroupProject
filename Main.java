@@ -18,6 +18,12 @@ public class Main extends Application {
         Bank bank = new Bank();
         bank.addBankAccount("10001", "11111", 100);
         bank.addBankAccount("10002", "22222", 50);
+        // Student bank - to test if withdrawl limit works.
+        bank.addBankAccount(new StudentBankAccount("10003","33333", 150));  //kept same pattern as it is easy to remeber
+        // Prime bank - to test withdraw boundaries and if overdraft works
+        bank.addBankAccount(new PrimeBankAccount("10004", "44444", 50));
+        // Child bank - test deposit boundaries
+        bank.addBankAccount(new ChildBankAccount("10005", "55555", 20));
 
         //UIModel-View-Controller structure setup
         // Create the UIModel, View and Controller objects and link them together
