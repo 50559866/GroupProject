@@ -3,9 +3,18 @@ package com.atmbanksimulator;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import java.awt.*;
 
 // ===== 🙂 View (Eyes / Ears / Nose / Mouth / Face) =====
 
@@ -25,6 +34,9 @@ class View {
     private ScrollPane scrollPane; // Provides scrollbars around the TextArea
     private GridPane grid;      // Main layout container (grid-based)
     private TilePane buttonPane;// Container for ATM keypad buttons (tiled layout)
+   // Sound for whe button pressed
+
+    //private AudioClip sound = new AudioClip("file:button2.mp3"); // Sound for whe button pressed
 
     // start() is called from Main to set up the UI.
     // Important: create controls here (not in the constructor or as field initializers),
@@ -61,7 +73,7 @@ class View {
                 {"7",    "8",  "9",  "",  "Dep",  ""},
                 {"4",    "5",  "6",  "",  "W/D",  ""},
                 {"1",    "2",  "3",  "",  "Bal",  "Fin"},
-                {"CLR",  "0",  "",   "",  "",     "Ent"} };
+                {"CLR",  "0",  "",   "",  "C/PW",     "Ent"} };
 
         // Build the button panel, loop through the array,
         // - For non-empty strings, create a Button
@@ -101,6 +113,7 @@ class View {
         String text = b.getText();   // get the button label
         System.out.println( "View::buttonClicked: label = "+ text );
         controller.process( text );  // Pass it to the controller's process method
+        Toolkit.getDefaultToolkit().beep(); //adds sound to button press
     }
 
     // This method is called by the UIModel whenever the UIModel changes.
