@@ -31,6 +31,9 @@ public class UIModel {
     private String numberPadInput;         // Current number displayed in the TextField (as a string)
     private String result;                 // Contents of the TextArea (may be multiple lines)
 
+    //counter for login attempts
+    int counter = 0;
+
     // UIModel constructor: pass a Bank object that the ATM interacts with
     public UIModel(Bank bank) {
         this.bank = bank;
@@ -107,7 +110,7 @@ public class UIModel {
             case STATE_ACCOUNT_NO:
                 // Waiting for a complete account number
                 // If nothing was entered, reset with "Invalid Account Number"
-                if (numberPadInput.equals("")) {
+                if (numberPadInput.length() != 5) {  //changed so account number has to be 5 values long
                     message = "Invalid Account Number";
                     reset(message);
                 }
@@ -123,21 +126,29 @@ public class UIModel {
                 break;
 
             case STATE_PASSWORD:
-                    // Waiting for a password
-                    // Save the typed number as accPasswd, clear numberPadInput,
-                    // then contact the bank to attempt login
+                // Waiting for a password
+                // Save the typed number as accPasswd, clear numberPadInput,
+                // then contact the bank to attempt login
                 accPasswd = numberPadInput;
                 numberPadInput = "";
-                if ( bank.login(accNumber, accPasswd) )
-                {
+                if (bank.login(accNumber, accPasswd)) {
                     // Successful login: change state to STATE_LOGGED_IN and provide instructions
                     setState(STATE_LOGGED_IN);
                     message = "Logged In";
                     result = "Now enter the amount\nThen press transaction\n(Dep = Deposit, W/D = Withdraw)";
                 } else {
-                    // Login failed: reset ATM and display error
-                    message = "Login failed: Unknown Account/Password";
-                    reset(message);
+                    counter++;
+                    //Limits login attempts to 3 trys, if exceeded it will make user input account number again
+                    if (counter > 3){
+                        setState(STATE_ACCOUNT_NO);
+                        numberPadInput = "";
+                        message = "Locked out";
+                        result = "Enter your account number\nFollowed by \"Ent\"";
+                    }
+                   else{
+                        message = "Login failed: Unknown Account/Password";
+                        result = "Attempt " + counter + " of 3";
+                    }
                 }
                 break;
 
@@ -262,4 +273,3 @@ public class UIModel {
         view.update(message,numberPadInput, result);
     }
 }
-
