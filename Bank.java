@@ -52,7 +52,7 @@ public class Bank {
         // - If found, set 'loggedInAccount' to that account and return true.
         // - If not found, reset 'loggedInAccount' to null and return false.
         for (BankAccount b: accounts) {
-            if (b != null && b.getAccNumber().equals(accountNumber) && b.getaccPasswd().equals(password)) {
+            if (b != null && b.getAccNumber().equals(accountNumber) && b.getAccPasswd().equals(password)) {
                 // found the right account
                 loggedInAccount = b;
                 return true;

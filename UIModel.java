@@ -20,6 +20,7 @@ public class UIModel {
     private final String STATE_ACCOUNT_NO = "account_no";
     private final String STATE_PASSWORD = "password";
     private final String STATE_LOGGED_IN = "logged_in";
+    private final String STATE_CREATE_ACCOUNT = "create_account";
 
     // Variables representing the state and data of the ATM UIModel
     private String state = STATE_ACCOUNT_NO;    // Current state of the ATM
@@ -145,7 +146,7 @@ public class UIModel {
                         message = "Locked out";
                         result = "Enter your account number\nFollowed by \"Ent\"";
                     }
-                   else{
+                    else{
                         message = "Login failed: Unknown Account/Password";
                         result = "Attempt " + counter + " of 3";
                     }
@@ -267,6 +268,7 @@ public class UIModel {
         reset("Invalid Command");
         update();
     }
+
 
     // Notify the View of changes by calling its update method
     private void update() {

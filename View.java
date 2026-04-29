@@ -1,8 +1,8 @@
 package com.atmbanksimulator;
 
+import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -11,10 +11,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
+import javafx.util.Duration;
+
 import java.awt.*;
+
 
 // ===== 🙂 View (Eyes / Ears / Nose / Mouth / Face) =====
 
@@ -29,19 +29,63 @@ class View {
 
     // Components (controls and layout) of the user interface
     private Label laMsg;        // Message label, e.g. shows "Welcome to ATM" at startup (not the window title)
+    private Label laPageName;   // Introduces Welcome/Goodbye pages when user first logs in
+    private Label laInfo;       // describes how program works
+    private Label laNames;      // tells user who created project
+
     private TextField tfInput;  // Input field where numbers typed on the keypad appear
     private TextArea taResult;  // Output area where instructions and results are displayed
     private ScrollPane scrollPane; // Provides scrollbars around the TextArea
-    private GridPane grid;      // Main layout container (grid-based)
-    private TilePane buttonPane;// Container for ATM keypad buttons (tiled layout)
-   // Sound for whe button pressed
 
-    //private AudioClip sound = new AudioClip("file:button2.mp3"); // Sound for whe button pressed
+    private StackPane stackPane; // allows (welcome, main, goodbye) pages to sit on top of eachother
+
+    private GridPane grid;      // Main layout container (grid-based)
+    private GridPane gridWelcome;  // shows welcome page
+    private GridPane gridGoodbye;  // shows goodbye page
+
+    private TilePane buttonPane;// Container for ATM keypad buttons (tiled layout)
+    private Button continueBtn;  //allows user to contion to the system after button press
 
     // start() is called from Main to set up the UI.
     // Important: create controls here (not in the constructor or as field initializers),
     // so that everything is initialized in the correct order.
     public void start(Stage window) {
+        //stackPane = new StackPane();
+
+        //----------Welcome Page-------------
+        gridWelcome = new GridPane();
+        gridWelcome.setId("Welcome");
+
+        laPageName = new Label("Welcome to the ATM!");
+        laInfo = new Label("\nThis online banking system allows the\n" +
+                "user to: login to account, withdrawl + \n" +
+                "deposit money and view balance." +
+                "\n\nButton Guide:\n" +
+                "CLR = Clear balance    Ent = Enter number\n" +
+                "W/D = Withdraw         Dep = Deposit\n" +
+                "Bal = View balance     Fin = Logout" +
+                "\n\n\n\n");
+        laNames = new Label("\n\nCreated by: MH, EG, EH");
+
+        FadeTransition ft = new FadeTransition(Duration.millis(250), gridWelcome);
+        ft.setFromValue(1.0);
+        ft.setToValue(0);
+        ft.setCycleCount(1);
+
+        continueBtn = new Button("Press here to Continue");
+        continueBtn.setOnAction(e -> {
+            ft.play();
+            gridWelcome.setMouseTransparent(true);
+            grid.setVisible(true);});
+
+        gridWelcome.add(laPageName, 0, 0);
+        gridWelcome.add(laInfo,0, 1);
+        gridWelcome.add(continueBtn,0, 2);
+        gridWelcome.add(laNames, 0 , 3);
+
+
+        //----------Main Page------------
+
         // Create the user interface component objects.
         // The ATM UI is organized as a vertical grid with four main parts:
         // 1. A message label
@@ -49,9 +93,11 @@ class View {
         // 3. A text area showing transaction results, summaries, and user instructions
         // 4. A tiled panel of buttons
         grid = new GridPane(); // top layout
+        grid.setVisible(false);
         grid.setId("Layout");  // assign an id to be used in css file
         buttonPane = new TilePane(); //
         buttonPane.setId("Buttons"); // assign an id to be used in css file
+
 
         // controls
         laMsg = new Label("Welcome to Bank-ATM");  // Message bar at the top
@@ -86,7 +132,7 @@ class View {
                     // non-empty string - make a button
                     Button btn = new Button( text );
                     btn.setOnAction( this::buttonClicked );
-                              // Register event handler: call buttonClicked() whenever this button is pressed
+                    // Register event handler: call buttonClicked() whenever this button is pressed
                     buttonPane.getChildren().add( btn );    // add this button to tiled pane
                 } else {
                     // empty string - make an empty Text element as a spacer
@@ -96,9 +142,13 @@ class View {
         }
         grid.add(buttonPane,0,3); // add the tiled pane of buttons to the main grid
 
-        // add the complete GUI to the window and display it
-        Scene scene = new Scene(grid, W, H);
+
+        stackPane = new StackPane();
+        stackPane.getChildren().addAll(grid, gridWelcome);
+
+        Scene scene = new Scene(stackPane, W, H);
         scene.getStylesheets().add("atm.css"); // tell to use our css file
+
         window.setScene(scene);
         window.setTitle("ATM-Bank Simulator"); //set window title
         window.show();
