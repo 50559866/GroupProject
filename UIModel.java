@@ -2,6 +2,8 @@ package com.atmbanksimulator;
 
 // ===== 🧠 UIModel (Brain) =====
 
+import java.time.LocalDateTime;
+
 // The UIModel represents all the actual content and functionality of the app
 // For the ATM, it keeps track of the information shown in the display
 // (the laMsg and two tfInput boxes), and the interaction with the bank, executes
@@ -34,6 +36,13 @@ public class UIModel {
 
     //counter for login attempts
     int counter = 0;
+
+    private String laBalance;
+    int dNum = 0;
+    int wdNum = 0;
+    private int sb;
+
+    public LocalDateTime dt =LocalDateTime.now();
 
     // UIModel constructor: pass a Bank object that the ATM interacts with
     public UIModel(Bank bank) {
@@ -137,6 +146,7 @@ public class UIModel {
                     setState(STATE_LOGGED_IN);
                     message = "Logged In";
                     result = "Now enter the amount\nThen press transaction\n(Dep = Deposit, W/D = Withdraw)";
+                    sb = bank.getBalance();
                 } else {
                     counter++;
                     //Limits login attempts to 3 trys, if exceeded it will make user input account number again
@@ -207,6 +217,7 @@ public class UIModel {
                 if(bank.withdraw( amount )){
                     message = "Withdraw Successful";
                     result = "Withdrawn: " + numberPadInput;
+                    wdNum++;
                 }
                 else{
                     message = "Withdraw Failed: Insufficient Funds";
@@ -236,6 +247,7 @@ public class UIModel {
                 bank.deposit( amount );
                 message = "Deposit Successful";
                 result = "Deposited: " + numberPadInput;
+                dNum++;
             }
             else {
                 message = "Invaild Amount";
@@ -266,6 +278,17 @@ public class UIModel {
     // - Reset the ATM and display an "Invalid Command" message
     public void processUnknownKey(String action) {
         reset("Invalid Command");
+        update();
+    }
+
+    public void processReceipt(){
+        message = "Statement Avaliable";
+
+        result = "Your old Balance was: " + sb +
+                "\nDeposits made: " + dNum +
+                "\nWithdrawals made: " + wdNum +
+                "\nYour new Balance is: " + bank.getBalance() +
+                "\n\n" + dt;
         update();
     }
 

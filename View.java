@@ -29,22 +29,28 @@ class View {
 
     // Components (controls and layout) of the user interface
     private Label laMsg;        // Message label, e.g. shows "Welcome to ATM" at startup (not the window title)
-    private Label laPageName;   // Introduces Welcome/Goodbye pages when user first logs in
+    private Label laPageName1;   // Introduces Welcome/Goodbye pages when user first logs in
+    private Label laPageName2;
     private Label laInfo;       // describes how program works
     private Label laNames;      // tells user who created project
+
+    private Label laStatement;
+    private Label laWdNum;
+    private Label laDNum;
+    private Label laBal;
 
     private TextField tfInput;  // Input field where numbers typed on the keypad appear
     private TextArea taResult;  // Output area where instructions and results are displayed
     private ScrollPane scrollPane; // Provides scrollbars around the TextArea
 
-    private StackPane stackPane; // allows (welcome, main, goodbye) pages to sit on top of eachother
+    private StackPane stackPane; // allows (welcome, main, goodbye) pages to sit on top of each-other
 
     private GridPane grid;      // Main layout container (grid-based)
     private GridPane gridWelcome;  // shows welcome page
     private GridPane gridGoodbye;  // shows goodbye page
 
     private TilePane buttonPane;// Container for ATM keypad buttons (tiled layout)
-    private Button continueBtn;  //allows user to contion to the system after button press
+    private Button continueBtn;  //allows user to continue to the system after button press
 
     // start() is called from Main to set up the UI.
     // Important: create controls here (not in the constructor or as field initializers),
@@ -56,9 +62,9 @@ class View {
         gridWelcome = new GridPane();
         gridWelcome.setId("Welcome");
 
-        laPageName = new Label("Welcome to the ATM!");
+        laPageName1 = new Label("Welcome to the ATM!");
         laInfo = new Label("\nThis online banking system allows the\n" +
-                "user to: login to account, withdrawl + \n" +
+                "user to: login to account, withdrawal + \n" +
                 "deposit money and view balance." +
                 "\n\nButton Guide:\n" +
                 "CLR = Clear balance    Ent = Enter number\n" +
@@ -78,14 +84,13 @@ class View {
             gridWelcome.setMouseTransparent(true);
             grid.setVisible(true);});
 
-        gridWelcome.add(laPageName, 0, 0);
+        gridWelcome.add(laPageName1, 0, 0);
         gridWelcome.add(laInfo,0, 1);
         gridWelcome.add(continueBtn,0, 2);
         gridWelcome.add(laNames, 0 , 3);
 
 
-        //----------Main Page------------
-
+        //-----------------Main Page--------------------
         // Create the user interface component objects.
         // The ATM UI is organized as a vertical grid with four main parts:
         // 1. A message label
@@ -119,7 +124,7 @@ class View {
                 {"7",    "8",  "9",  "",  "Dep",  ""},
                 {"4",    "5",  "6",  "",  "W/D",  ""},
                 {"1",    "2",  "3",  "",  "Bal",  "Fin"},
-                {"CLR",  "0",  "",   "",  "C/PW",     "Ent"} };
+                {"CLR",  "0",  "",   "",  "Rpt",     "Ent"} };
 
         // Build the button panel, loop through the array,
         // - For non-empty strings, create a Button
@@ -147,7 +152,7 @@ class View {
         stackPane.getChildren().addAll(grid, gridWelcome);
 
         Scene scene = new Scene(stackPane, W, H);
-        scene.getStylesheets().add("atm.css"); // tell to use our css file
+        scene.getStylesheets().add("atm.css"); // tell to use our Css file
 
         window.setScene(scene);
         window.setTitle("ATM-Bank Simulator"); //set window title
@@ -176,5 +181,12 @@ class View {
         laMsg.setText(msg);
         tfInput.setText(tfInputMsg);
         taResult.setText(taResultMsg);
+    }
+
+    public void updateLogout(String wdNum,String dNum,String bNum)
+    {
+        laWdNum.setText(wdNum);
+        laDNum.setText(dNum);
+        laBal.setText(bNum);
     }
 }
