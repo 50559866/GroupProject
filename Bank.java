@@ -12,7 +12,7 @@ public class Bank {
     // Refactor addBankAccount and login methods to leverage ArrayList.
 
     // Instance variables storing bank information
-    private int maxAccounts = 10;                       // Maximum number of accounts the bank can hold
+    private int maxAccounts = 20;                       // Maximum number of accounts the bank can hold
     private int numAccounts = 0;                        // Current number of accounts in the bank
     private BankAccount[] accounts = new BankAccount[maxAccounts];  // Array to hold BankAccount objects
     private BankAccount loggedInAccount = null;         // Currently logged-in account ('null' if no one is logged in)
@@ -51,9 +51,18 @@ public class Bank {
         // Search the accounts array to find a BankAccount with a matching accountNumber and password.
         // - If found, set 'loggedInAccount' to that account and return true.
         // - If not found, reset 'loggedInAccount' to null and return false.
-        for (BankAccount b: accounts) {
-            if (b != null && b.getAccNumber().equals(accountNumber) && b.getAccPasswd().equals(password)) {
-                // found the right account
+        //for (BankAccount b: accounts) {
+        //    if (b.getAccNumber().equals(accountNumber) && b.getaccPasswd().equals(password)) {
+        //        // found the right account
+         //       loggedInAccount = b;
+         //       return true;
+         //   }
+        //}
+        //only goes up to the point that there are objects, instead of looping through the full thing
+        for (int i = 0; i < numAccounts; i++){
+            BankAccount b = accounts[i];
+            if(b.getAccNumber().equals(accountNumber) && b.getaccPasswd().equals(password)){
+
                 loggedInAccount = b;
                 return true;
             }
@@ -61,6 +70,10 @@ public class Bank {
         // not found - return false
         loggedInAccount = null;
         return false;
+    }
+
+    public void changePassword(String newPassword){
+        loggedInAccount.setPassword(newPassword);
     }
 
     // Log out of the currently logged-in account, if any

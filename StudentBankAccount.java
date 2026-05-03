@@ -1,9 +1,4 @@
-package com.atmbanksimulator; //package names must be the same
-
-// class for Student Bank Account, inherited from BankAccount class as
-// there is the same use of variables.
-// This account overrides the 'withdraw' function as it is limited to max 50
-// pounds per session a user can withdraw
+package com.atmbanksimulator;
 
 public class StudentBankAccount extends BankAccount{
     private int wdLimit = 50; //limites withdrawls to 50

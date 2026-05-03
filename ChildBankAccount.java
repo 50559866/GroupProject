@@ -1,7 +1,5 @@
 package com.atmbanksimulator;
 
-// Class for child bank account
-// - does not let user deposit more than 20 pounds at a time
 public class ChildBankAccount extends BankAccount{
 
     public ChildBankAccount(String a, String p, int b){

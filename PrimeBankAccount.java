@@ -1,7 +1,5 @@
 package com.atmbanksimulator;
 
-// class for primebank account
-// - lets users go -500 into negatives
 public class PrimeBankAccount extends BankAccount{
 
     public PrimeBankAccount(String a, String p, int b){
@@ -20,6 +18,7 @@ public class PrimeBankAccount extends BankAccount{
         }
         setBalance(newBalance); //overwrites balance and all withdraw rules as parent class doesnt allow negatives
         return true;
-        }
     }
+}
+
 

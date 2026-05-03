@@ -3,6 +3,7 @@ package com.atmbanksimulator;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -14,7 +15,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.awt.*;
-
 
 // ===== 🙂 View (Eyes / Ears / Nose / Mouth / Face) =====
 
@@ -29,6 +29,12 @@ class View {
 
     // Components (controls and layout) of the user interface
     private Label laMsg;        // Message label, e.g. shows "Welcome to ATM" at startup (not the window title)
+    private TextField tfInput;  // Input field where numbers typed on the keypad appear
+    private TextArea taResult;  // Output area where instructions and results are displayed
+    private ScrollPane scrollPane; // Provides scrollbars around the TextArea
+    private GridPane grid;      // Main layout container (grid-based)
+    private TilePane buttonPane;// Container for ATM keypad buttons (tiled layout)
+
     private Label laPageName1;   // Introduces Welcome/Goodbye pages when user first logs in
     private Label laPageName2;
     private Label laInfo;       // describes how program works
@@ -39,24 +45,20 @@ class View {
     private Label laDNum;
     private Label laBal;
 
-    private TextField tfInput;  // Input field where numbers typed on the keypad appear
-    private TextArea taResult;  // Output area where instructions and results are displayed
-    private ScrollPane scrollPane; // Provides scrollbars around the TextArea
-
     private StackPane stackPane; // allows (welcome, main, goodbye) pages to sit on top of each-other
 
-    private GridPane grid;      // Main layout container (grid-based)
     private GridPane gridWelcome;  // shows welcome page
     private GridPane gridGoodbye;  // shows goodbye page
 
-    private TilePane buttonPane;// Container for ATM keypad buttons (tiled layout)
-    private Button continueBtn;  //allows user to continue to the system after button press
+    private Button continueBtn;
+
+
+
 
     // start() is called from Main to set up the UI.
     // Important: create controls here (not in the constructor or as field initializers),
     // so that everything is initialized in the correct order.
     public void start(Stage window) {
-        //stackPane = new StackPane();
 
         //----------Welcome Page-------------
         gridWelcome = new GridPane();
@@ -71,7 +73,7 @@ class View {
                 "W/D = Withdraw         Dep = Deposit\n" +
                 "Bal = View balance     Fin = Logout" +
                 "\n\n\n\n");
-        laNames = new Label("\n\nCreated by: MH, EG, EH");
+        laNames = new Label("\n\nCreated by: MH, EG, EH, CB");
 
         FadeTransition ft = new FadeTransition(Duration.millis(250), gridWelcome);
         ft.setFromValue(1.0);
@@ -90,6 +92,7 @@ class View {
         gridWelcome.add(laNames, 0 , 3);
 
 
+
         //-----------------Main Page--------------------
         // Create the user interface component objects.
         // The ATM UI is organized as a vertical grid with four main parts:
@@ -102,7 +105,6 @@ class View {
         grid.setId("Layout");  // assign an id to be used in css file
         buttonPane = new TilePane(); //
         buttonPane.setId("Buttons"); // assign an id to be used in css file
-
 
         // controls
         laMsg = new Label("Welcome to Bank-ATM");  // Message bar at the top
@@ -121,7 +123,7 @@ class View {
         // Define the button layout as a 2D array of text labels.
         // Empty strings ("") represent blank spaces in the grid.
         String buttonTexts[][] = {
-                {"7",    "8",  "9",  "",  "Dep",  ""},
+                {"7",    "8",  "9",  "",  "Dep",  "pss"},
                 {"4",    "5",  "6",  "",  "W/D",  ""},
                 {"1",    "2",  "3",  "",  "Bal",  "Fin"},
                 {"CLR",  "0",  "",   "",  "Rpt",     "Ent"} };
@@ -137,7 +139,7 @@ class View {
                     // non-empty string - make a button
                     Button btn = new Button( text );
                     btn.setOnAction( this::buttonClicked );
-                    // Register event handler: call buttonClicked() whenever this button is pressed
+                              // Register event handler: call buttonClicked() whenever this button is pressed
                     buttonPane.getChildren().add( btn );    // add this button to tiled pane
                 } else {
                     // empty string - make an empty Text element as a spacer
@@ -146,7 +148,6 @@ class View {
             }
         }
         grid.add(buttonPane,0,3); // add the tiled pane of buttons to the main grid
-
 
         stackPane = new StackPane();
         stackPane.getChildren().addAll(grid, gridWelcome);
@@ -168,7 +169,7 @@ class View {
         String text = b.getText();   // get the button label
         System.out.println( "View::buttonClicked: label = "+ text );
         controller.process( text );  // Pass it to the controller's process method
-        Toolkit.getDefaultToolkit().beep(); //adds sound to button press
+        Toolkit.getDefaultToolkit().beep();
     }
 
     // This method is called by the UIModel whenever the UIModel changes.

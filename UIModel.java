@@ -22,19 +22,30 @@ public class UIModel {
     private final String STATE_ACCOUNT_NO = "account_no";
     private final String STATE_PASSWORD = "password";
     private final String STATE_LOGGED_IN = "logged_in";
-    private final String STATE_CREATE_ACCOUNT = "create_account";
+    // addded in two new states when logging in, to create a new account
+    //      - state_new_account takes in a choice 1 or 0 depending if the user
+    //      wants to create a new account or not
+    //      - state_new_password is only used if the user does, and adds acc/psswd to bank
+    private final String STATE_NEW_ACCOUNT = "new_account";
+    private final String STATE_NEW_PASSWORD = "new_password";
+
+    // adding in new state for password changing
+    private final String STATE_CHANGE_PASSWORD = "change_password";
+
 
     // Variables representing the state and data of the ATM UIModel
     private String state = STATE_ACCOUNT_NO;    // Current state of the ATM
     private String accNumber = "";         // Account number being typed
-    private String accPasswd = "";         // Password being typed
+    private String accPasswd = "";// Password being typed
+    private String newAcc = ""; //new account string
+    private String newPasswd = ""; // new password string
 
     // Variables shown on the View display
     private String message;                // Message label text
     private String numberPadInput;         // Current number displayed in the TextField (as a string)
     private String result;                 // Contents of the TextArea (may be multiple lines)
 
-    //counter for login attempts
+    //counter for login attempts - added
     int counter = 0;
 
     private String laBalance;
@@ -117,10 +128,56 @@ public class UIModel {
         // The action depends on the current ATM state
         switch ( state )
         {
+            case STATE_CHANGE_PASSWORD:
+                String newPass = numberPadInput;
+                numberPadInput = "";
+
+                bank.changePassword(newPass);
+
+                message = "Password changed successfully";
+                result = "";
+
+                setState(STATE_LOGGED_IN);
+                break;
+
+            case STATE_NEW_ACCOUNT:
+
+                String choice = numberPadInput;
+                numberPadInput = "";
+                if (choice.equals("1")) {
+                    setState(STATE_PASSWORD);
+
+                    message = "Enter Password";
+                    result = "Now enter your password\nFollowed by \"Ent\"";
+            }
+                else if (choice.equals("0")){
+                    newAcc = accNumber;
+                    setState(STATE_NEW_PASSWORD);
+                    message = "Enter a new password";
+                    result = "Now enter your password\nFollowed by \"Ent\"";
+                    //bank.addBankAccount(newAcc,newPasswd, 200);
+                }
+                else{
+                    reset("Invalid choice");
+                }
+
+                break;
+
+            case STATE_NEW_PASSWORD:
+                newPasswd = numberPadInput;
+                numberPadInput = "";
+                bank.addBankAccount(newAcc,newPasswd, 200);
+
+                message = "Account created successfully!";
+                result = "You can now log int";
+
+                setState(STATE_ACCOUNT_NO);
+                break;
+
             case STATE_ACCOUNT_NO:
                 // Waiting for a complete account number
                 // If nothing was entered, reset with "Invalid Account Number"
-                if (numberPadInput.length() != 5) {  //changed so account number has to be 5 values long
+                if (numberPadInput.length() !=5 ) {
                     message = "Invalid Account Number";
                     reset(message);
                 }
@@ -129,24 +186,34 @@ public class UIModel {
                     // update the state to expect password, and provide instructions
                     accNumber = numberPadInput;
                     numberPadInput = "";
-                    setState(STATE_PASSWORD);
-                    message = "Account Number Accepted";
-                    result = "Now enter your password\nFollowed by \"Ent\"";
+                    message = "Is this an existing account? press 1 for yes, 0 for no";
+                    reset(message);
+                    setState(STATE_NEW_ACCOUNT);
+                    //setState(STATE_PASSWORD);
+
+                    message = "Press 1 for exisisitng account";
+                    result = "or 0 for new acc \nFollowed by \"Ent\"";
                 }
                 break;
 
             case STATE_PASSWORD:
-                // Waiting for a password
-                // Save the typed number as accPasswd, clear numberPadInput,
-                // then contact the bank to attempt login
+                    // Waiting for a password
+                    // Save the typed number as accPasswd, clear numberPadInput,
+                    // then contact the bank to attempt login
                 accPasswd = numberPadInput;
                 numberPadInput = "";
-                if (bank.login(accNumber, accPasswd)) {
+                message = "Is this an existing account? press 1 for yes, 0 for no";
+                reset(message);
+                if (numberPadInput.equals("1")){
+                    bank.addBankAccount(newAcc,newPasswd, 200);
+                }
+                //setState(STATE_NEW_ACCOUNT);
+                if ( bank.login(accNumber, accPasswd) )
+                {
                     // Successful login: change state to STATE_LOGGED_IN and provide instructions
                     setState(STATE_LOGGED_IN);
                     message = "Logged In";
                     result = "Now enter the amount\nThen press transaction\n(Dep = Deposit, W/D = Withdraw)";
-                    sb = bank.getBalance();
                 } else {
                     counter++;
                     //Limits login attempts to 3 trys, if exceeded it will make user input account number again
@@ -156,7 +223,7 @@ public class UIModel {
                         message = "Locked out";
                         result = "Enter your account number\nFollowed by \"Ent\"";
                     }
-                    else{
+                    else {
                         message = "Login failed: Unknown Account/Password";
                         result = "Attempt " + counter + " of 3";
                     }
@@ -165,7 +232,10 @@ public class UIModel {
 
             case STATE_LOGGED_IN:
             default:
-                // Do nothing for other states (user is already logged in)
+                // Do nothing for other states (user is already loggdefault:
+
+            //case STATE_NEW_ACCOUNT:
+            //default:
         }
 
         update(); // Refresh the GUI to show messages and input
@@ -217,7 +287,6 @@ public class UIModel {
                 if(bank.withdraw( amount )){
                     message = "Withdraw Successful";
                     result = "Withdrawn: " + numberPadInput;
-                    wdNum++;
                 }
                 else{
                     message = "Withdraw Failed: Insufficient Funds";
@@ -243,7 +312,7 @@ public class UIModel {
     public void processDeposit() {
         if (state.equals(STATE_LOGGED_IN)) {
             int amount = parseValidAmount(numberPadInput);
-            if (amount > 0) {
+            if (amount > 0 && bank.getBalance() <= Integer.MAX_VALUE - amount) {
                 bank.deposit( amount );
                 message = "Deposit Successful";
                 result = "Deposited: " + numberPadInput;
@@ -274,6 +343,21 @@ public class UIModel {
         update();
     }
 
+    public void processChangePassword(){
+        //message = "state password change";
+        //reset(message);
+        if (state.equals(STATE_LOGGED_IN)){
+            setState(STATE_CHANGE_PASSWORD);
+            numberPadInput = "";
+            message = "Enter new password";
+            result = "enter new pass - Press enter when done";
+        }
+        else{
+            message = "not logged in";
+            reset(message);
+        }
+    }
+
     // Handle unknown or invalid buttons for the current state:
     // - Reset the ATM and display an "Invalid Command" message
     public void processUnknownKey(String action) {
@@ -292,9 +376,9 @@ public class UIModel {
         update();
     }
 
-
     // Notify the View of changes by calling its update method
     private void update() {
         view.update(message,numberPadInput, result);
     }
 }
+

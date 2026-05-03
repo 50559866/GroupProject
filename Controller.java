@@ -35,6 +35,9 @@ public class Controller {
             case "Fin":
                 UIModel.processFinish();
                 break;
+            case "pss":
+                UIModel.processChangePassword();
+                break;
             case "Rpt":
                 UIModel.processReceipt();
                 break;

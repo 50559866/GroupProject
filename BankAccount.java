@@ -54,7 +54,12 @@ public class BankAccount {
         return accNumber;
     }
     // Getter for the account password
-    public String getAccPasswd() {
+    public String getaccPasswd() {
         return accPasswd;
+    }
+
+    //added in a setpassword
+    public void setPassword(String newPassword){
+        accPasswd = newPassword;
     }
 }
